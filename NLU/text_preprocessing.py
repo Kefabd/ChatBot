@@ -4,31 +4,36 @@ import string
 import re
 import nltk
 from nltk.corpus import stopwords
-from langdetect import detect
-
-
-data = pd.read_csv("SMSSpamCollection.txt", sep='\t', header=0)
-
-
-X = data[["message"]]
-X = X.to_numpy()
-X = X.reshape(-1,1)
+from langdetect import detect, detect_langs
+import yaml
+import math
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 nltk.download('stopwords')
 nltk.download('punkt_tab')
+nltk.download('wordnet')
  
 english_stop_words = list(set(stopwords.words('english')))
-french_stop_words = list(set(stopwords.words('french')))
-global_stop_words = english_stop_words + french_stop_words
 
+# french_stop_words = list(set(stopwords.words('french')))
+# global_stop_words = english_stop_words + french_stop_words
 
+# Load the YAML file
+with open("conversations.yml", "r", encoding="utf-8") as file:
+    data = yaml.safe_load(file)  # Parse YAML file safely
+
+# Extract conversations
+global conversations 
+conversations = data["conversations"]
+
+print(conversations)
 
 
 def to_lowercase(prompt):
     return prompt.lower()
 
 def delete_stopwords(prompt):
-    return "".join([word for word in prompt.split() if word not in global_stop_words])
+    return " ".join([word for word in prompt.split() if word not in english_stop_words])
 
 def text_cleaning(prompt):
     # List of characters to ignore
@@ -50,11 +55,10 @@ def text_cleaning(prompt):
     return cleaned_prompt
 
 def tokenization(sentence):
+    language = "french"
     language_detected = detect(sentence)
     if language_detected == "en":
         language = "english"
-    else:
-        language = "french"
 
     return nltk.word_tokenize(sentence, language=language)
 
@@ -62,11 +66,37 @@ def lemmatization(tokens):
     lemmatizer = nltk.stem.WordNetLemmatizer()
     return [lemmatizer.lemmatize(token) for token in tokens]
 
+def Tf(token, corpus, num_doc):
+    current_doc = corpus[num_doc]
+    return current_doc.count(token) / len(current_doc.split())
 
+def IDF(terme, corpus, num_doc):
+    count = 0
+    for doc in corpus:
+        if terme in doc:
+            count += 1
+    
+    return math.log(len(corpus) / count)
 
+def nottoyage_corpus(corpus):
+    conversations = [text_cleaning(delete_stopwords(to_lowercase(doc))) for doc in corpus]
+    return conversations
+
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(conversations[0])
+print(X.shape)
 
 # Example usage
-sentence = "hello world! how's it going?"
+sentence = "I'm happy to be here today as an data engineering student and I will try to do my best to be the first one ! on the next day of this week?"
 
-cleaned = tokenization(sentence)
-print("Cleaned Sentence:", cleaned)
+print("LowerCase Sentence: ", to_lowercase(sentence))
+
+print("Without Stop words: ", delete_stopwords(sentence))
+
+print("Cleaned text: ", text_cleaning(sentence))
+
+test = tokenization(sentence)
+print("Tokenization: ", test)
+
+print("Lemmatization: ", lemmatization(tokenization(sentence)))
+
