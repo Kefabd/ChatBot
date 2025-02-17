@@ -66,25 +66,22 @@ def lemmatization(tokens):
     lemmatizer = nltk.stem.WordNetLemmatizer()
     return [lemmatizer.lemmatize(token) for token in tokens]
 
-def Tf(token, corpus, num_doc):
-    current_doc = corpus[num_doc]
-    return current_doc.count(token) / len(current_doc.split())
+# def Tf(token, corpus, num_doc):
+#     current_doc = corpus[num_doc]
+#     return current_doc.count(token) / len(current_doc.split())
 
-def IDF(terme, corpus, num_doc):
-    count = 0
-    for doc in corpus:
-        if terme in doc:
-            count += 1
+# def IDF(terme, corpus, num_doc):
+#     count = 0
+#     for doc in corpus:
+#         if terme in doc:
+#             count += 1
     
-    return math.log(len(corpus) / count)
+    # return math.log(len(corpus) / count)
 
 def nottoyage_corpus(corpus):
     conversations = [text_cleaning(delete_stopwords(to_lowercase(doc))) for doc in corpus]
     return conversations
 
-vectorizer = TfidfVectorizer()
-X = vectorizer.fit_transform(conversations[0])
-print(X.shape)
 
 # Example usage
 sentence = "I'm happy to be here today as an data engineering student and I will try to do my best to be the first one ! on the next day of this week?"
