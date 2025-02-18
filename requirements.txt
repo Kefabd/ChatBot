@@ -4,3 +4,4 @@ nltk
 langdetect
 pyyaml
 scikit-learn
+gensim
