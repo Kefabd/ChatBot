@@ -126,7 +126,22 @@ cleaned_corpus = nettoyage_corpus([sentence])
 print(f"Nettoyage Corpus of Sentence:\n{cleaned_corpus}")
 
 # Load a pre-trained word embedding model.
+# pretrained_model = api.load("glove-wiki-gigaword-100")
+
+# Load the Google News Word2Vec model (300-dimensional)
+# pretrained_model = api.load("word2vec-google-news-300")
+
+# Load the GloVe Wiki Gigaword models (you can choose "50", "100", "200", or "300")
 pretrained_model = api.load("glove-wiki-gigaword-100")
+
+# Load the GloVe Twitter model (e.g., 25-dimensional)
+# pretrained_model = api.load("glove-twitter-25")
+
+# Load the FastText model (300-dimensional with subword information)
+# pretrained_model = api.load("fasttext-wiki-news-subwords-300")
+
+# Load the ConceptNet Numberbatch model (300-dimensional)
+# pretrained_model = api.load("conceptnet-numberbatch-17-06-300")
 
 # Compute the sentence embedding using the pre-trained model.
 # We pass the tokenized version of our cleaned document (first element of cleaned_corpus).
