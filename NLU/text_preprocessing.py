@@ -4,31 +4,27 @@ import string
 import re
 import nltk
 from nltk.corpus import stopwords
-from langdetect import detect, detect_langs
+from langdetect import detect
 import yaml
 import math
 from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 
+# Download necessary NLTK resources
 nltk.download("stopwords")
-nltk.download("punkt_tab")
+nltk.download("punkt")
 nltk.download("wordnet")
 
 english_stop_words = list(set(stopwords.words("english")))
-
-# french_stop_words = list(set(stopwords.words('french')))
-# global_stop_words = english_stop_words + french_stop_words
 
 # Load the YAML file
 with open("conversations.yml", "r", encoding="utf-8") as file:
     data = yaml.safe_load(file)  # Parse YAML file safely
 
-# Extract conversations
-global conversations
+# Extract conversations from the YAML data
 conversations = data["conversations"]
-
 print(conversations)
-print(os.listdir('C:\Users\abdo\OneDrive\Bureau\EIL\ing2\Projet Technique\ChatBot_from_scratch\NLU'))
+
 
 def to_lowercase(prompt):
     return prompt.lower()
@@ -39,31 +35,30 @@ def delete_stopwords(prompt):
 
 
 def text_cleaning(prompt):
-    # List of characters to ignore
+    # List of punctuation characters to ignore
     ignore_character = list(string.punctuation)
 
     # Create a regex pattern for characters to ignore
     pattern = f"[{re.escape(''.join(ignore_character))}]"
 
-    # Replace matching characters with an empty string
+    # Replace matching characters with a space
     cleaned_prompt = re.sub(pattern, " ", prompt)
 
-    # Regular expression to match single-letter words
+    # Remove single-letter words
     cleaned_prompt = re.sub(r"\b[a-z]\b", "", cleaned_prompt)
 
-    # Remove extra spaces caused by removing single-letter words
+    # Remove extra spaces
     cleaned_prompt = re.sub(r"\s+", " ", cleaned_prompt)
 
-    print(ignore_character)  # For debugging purposes
-    return cleaned_prompt
+    return cleaned_prompt.strip()
 
 
 def tokenization(sentence):
+    # Default language is French
     language = "french"
     language_detected = detect(sentence)
     if language_detected == "en":
         language = "english"
-
     return nltk.word_tokenize(sentence, language=language)
 
 
@@ -72,36 +67,23 @@ def lemmatization(tokens):
     return [lemmatizer.lemmatize(token) for token in tokens]
 
 
-# def Tf(token, corpus, num_doc):
-#     current_doc = corpus[num_doc]
-#     return current_doc.count(token) / len(current_doc.split())
-
-# def IDF(terme, corpus, num_doc):
-#     count = 0
-#     for doc in corpus:
-#         if terme in doc:
-#             count += 1
-
-# return math.log(len(corpus) / count)
-
-
-def nottoyage_corpus(corpus):
-    conversations = [
-        text_cleaning(delete_stopwords(to_lowercase(doc))) for doc in corpus
+def nettoyage_corpus(corpus):
+    """
+    Expects corpus to be an iterable (e.g., list) of documents.
+    """
+    cleaned_conversations = [
+        lemmatization(tokenization(text_cleaning(delete_stopwords(to_lowercase(doc)))))
+        for doc in corpus
     ]
-    return conversations
+    return cleaned_conversations
 
 
 # Example usage
-# sentence = "I'm happy to be here today as an data engineering working student and I will try to do my best to be the first one ! on the next day of this week?"
+sentence = "I'm happy to be here today as an data engineering working student and I will try to do my best to be the first one ! on the next day of this week?"
 
-# print("LowerCase Sentence: ", to_lowercase(sentence))
+print(100 * "#")
 
-# print("Without Stop words: ", delete_stopwords(sentence))
+# IMPORTANT: Wrap the sentence in a list so it's treated as a corpus with one document
+cleaned_corpus = nettoyage_corpus([sentence])
+print(f"Nettoyage Corpus of Sentence:\n{cleaned_corpus}")
 
-# print("Cleaned text: ", text_cleaning(sentence))
-
-# test = tokenization(sentence)
-# print("Tokenization: ", test)
-
-print("Lemmatization: ", lemmatization(tokenization(sentence)))
