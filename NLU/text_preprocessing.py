@@ -8,6 +8,7 @@ from langdetect import detect, detect_langs
 import yaml
 import math
 from sklearn.feature_extraction.text import TfidfVectorizer
+import os
 
 nltk.download('stopwords')
 nltk.download('punkt_tab')
@@ -84,16 +85,16 @@ def nottoyage_corpus(corpus):
 
 
 # Example usage
-sentence = "I'm happy to be here today as an data engineering student and I will try to do my best to be the first one ! on the next day of this week?"
+# sentence = "I'm happy to be here today as an data engineering working student and I will try to do my best to be the first one ! on the next day of this week?"
 
-print("LowerCase Sentence: ", to_lowercase(sentence))
+# print("LowerCase Sentence: ", to_lowercase(sentence))
 
-print("Without Stop words: ", delete_stopwords(sentence))
+# print("Without Stop words: ", delete_stopwords(sentence))
 
-print("Cleaned text: ", text_cleaning(sentence))
+# print("Cleaned text: ", text_cleaning(sentence))
 
-test = tokenization(sentence)
-print("Tokenization: ", test)
+# test = tokenization(sentence)
+# print("Tokenization: ", test)
 
-print("Lemmatization: ", lemmatization(tokenization(sentence)))
+# print("Lemmatization: ", lemmatization(tokenization(sentence)))
 
