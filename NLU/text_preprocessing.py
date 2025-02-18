@@ -28,7 +28,7 @@ global conversations
 conversations = data["conversations"]
 
 print(conversations)
-
+print(os.listdir('C:\Users\abdo\OneDrive\Bureau\EIL\ing2\Projet Technique\ChatBot_from_scratch\NLU'))
 
 def to_lowercase(prompt):
     return prompt.lower()
