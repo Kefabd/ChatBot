@@ -9,11 +9,11 @@ import yaml
 import math
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-nltk.download('stopwords')
-nltk.download('punkt_tab')
-nltk.download('wordnet')
- 
-english_stop_words = list(set(stopwords.words('english')))
+nltk.download("stopwords")
+nltk.download("punkt_tab")
+nltk.download("wordnet")
+
+english_stop_words = list(set(stopwords.words("english")))
 
 # french_stop_words = list(set(stopwords.words('french')))
 # global_stop_words = english_stop_words + french_stop_words
@@ -23,7 +23,7 @@ with open("conversations.yml", "r", encoding="utf-8") as file:
     data = yaml.safe_load(file)  # Parse YAML file safely
 
 # Extract conversations
-global conversations 
+global conversations
 conversations = data["conversations"]
 
 print(conversations)
@@ -32,27 +32,30 @@ print(conversations)
 def to_lowercase(prompt):
     return prompt.lower()
 
+
 def delete_stopwords(prompt):
     return " ".join([word for word in prompt.split() if word not in english_stop_words])
+
 
 def text_cleaning(prompt):
     # List of characters to ignore
     ignore_character = list(string.punctuation)
-    
+
     # Create a regex pattern for characters to ignore
     pattern = f"[{re.escape(''.join(ignore_character))}]"
 
     # Replace matching characters with an empty string
-    cleaned_prompt = re.sub(pattern, ' ', prompt)
+    cleaned_prompt = re.sub(pattern, " ", prompt)
 
     # Regular expression to match single-letter words
-    cleaned_prompt = re.sub(r'\b[a-z]\b', '', cleaned_prompt)
-    
+    cleaned_prompt = re.sub(r"\b[a-z]\b", "", cleaned_prompt)
+
     # Remove extra spaces caused by removing single-letter words
-    cleaned_prompt = re.sub(r'\s+', ' ', cleaned_prompt)
+    cleaned_prompt = re.sub(r"\s+", " ", cleaned_prompt)
 
     print(ignore_character)  # For debugging purposes
     return cleaned_prompt
+
 
 def tokenization(sentence):
     language = "french"
@@ -62,9 +65,11 @@ def tokenization(sentence):
 
     return nltk.word_tokenize(sentence, language=language)
 
+
 def lemmatization(tokens):
     lemmatizer = nltk.stem.WordNetLemmatizer()
     return [lemmatizer.lemmatize(token) for token in tokens]
+
 
 # def Tf(token, corpus, num_doc):
 #     current_doc = corpus[num_doc]
@@ -75,11 +80,14 @@ def lemmatization(tokens):
 #     for doc in corpus:
 #         if terme in doc:
 #             count += 1
-    
-    # return math.log(len(corpus) / count)
+
+# return math.log(len(corpus) / count)
+
 
 def nottoyage_corpus(corpus):
-    conversations = [text_cleaning(delete_stopwords(to_lowercase(doc))) for doc in corpus]
+    conversations = [
+        text_cleaning(delete_stopwords(to_lowercase(doc))) for doc in corpus
+    ]
     return conversations
 
 
@@ -96,4 +104,3 @@ test = tokenization(sentence)
 print("Tokenization: ", test)
 
 print("Lemmatization: ", lemmatization(tokenization(sentence)))
-
