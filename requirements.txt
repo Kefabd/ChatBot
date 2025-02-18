@@ -1,0 +1,7 @@
+pandas
+numpy
+nltk
+langdetect
+pyyaml
+scikit-learn
+gensim
