@@ -5,10 +5,8 @@ import re
 import nltk
 from nltk.corpus import stopwords
 from langdetect import detect, detect_langs
-import yaml
-import math
-from sklearn.feature_extraction.text import TfidfVectorizer
 import os
+import gensim
 
 nltk.download('stopwords')
 nltk.download('punkt_tab')
@@ -19,16 +17,6 @@ english_stop_words = list(set(stopwords.words('english')))
 # french_stop_words = list(set(stopwords.words('french')))
 # global_stop_words = english_stop_words + french_stop_words
 
-# Load the YAML file
-with open("conversations.yml", "r", encoding="utf-8") as file:
-    data = yaml.safe_load(file)  # Parse YAML file safely
-
-# Extract conversations
-global conversations 
-conversations = data["conversations"]
-
-print(conversations)
-print(os.listdir('C:\Users\abdo\OneDrive\Bureau\EIL\ing2\Projet Technique\ChatBot_from_scratch\NLU'))
 
 def to_lowercase(prompt):
     return prompt.lower()
@@ -52,7 +40,7 @@ def text_cleaning(prompt):
     # Remove extra spaces caused by removing single-letter words
     cleaned_prompt = re.sub(r'\s+', ' ', cleaned_prompt)
 
-    print(ignore_character)  # For debugging purposes
+    # print(ignore_character)  # For debugging purposes
     return cleaned_prompt
 
 def tokenization(sentence):
@@ -97,4 +85,21 @@ def nottoyage_corpus(corpus):
 # print("Tokenization: ", test)
 
 # print("Lemmatization: ", lemmatization(tokenization(sentence)))
+
+if __name__ == "__main__":
+
+
+    conversations = []
+    for file in os.listdir('.'):
+        if file == "conversations.yml":
+            lines = open(file, 'rt', encoding='utf8').read().split('\n')
+            for line in lines:
+                if line.startswith('- - ') or line.startswith('  - '):
+                    line = line.replace('- - ', '')
+                    line = line.replace('  - ', '')
+                    conversations.append(text_cleaning(delete_stopwords(to_lowercase(line))))
+    
+    print(conversations)
+    conversations = [lemmatization(tokenization(sentence=sent)) for sent in conversations]
+    print(conversations)
 
