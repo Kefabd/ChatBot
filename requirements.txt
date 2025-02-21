@@ -5,3 +5,4 @@ langdetect
 pyyaml
 scikit-learn
 gensim
+torch
