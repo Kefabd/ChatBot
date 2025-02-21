@@ -4,18 +4,12 @@ import string
 import re
 import nltk
 from nltk.corpus import stopwords
-<<<<<<< HEAD
-from langdetect import detect, detect_langs
-import os
-import gensim
-=======
 from langdetect import detect
 import yaml
 import math
 from sklearn.feature_extraction.text import TfidfVectorizer
 import os
 import gensim.downloader as api
->>>>>>> bdcb57dae5aa14b7528e67c5ea93725e3f38c6e5
 
 # Download necessary NLTK resources
 nltk.download("stopwords")
@@ -24,8 +18,6 @@ nltk.download("wordnet")
 
 english_stop_words = list(set(stopwords.words("english")))
 
-<<<<<<< HEAD
-=======
 # Load the YAML file
 with open("conversations.yml", "r", encoding="utf-8") as file:
     data = yaml.safe_load(file)  # Parse YAML file safely
@@ -34,7 +26,6 @@ with open("conversations.yml", "r", encoding="utf-8") as file:
 conversations = data["conversations"]
 print(conversations)
 
->>>>>>> bdcb57dae5aa14b7528e67c5ea93725e3f38c6e5
 
 def to_lowercase(prompt):
     return prompt.lower()
@@ -62,11 +53,6 @@ def text_cleaning(prompt):
 
     return cleaned_prompt.strip()
 
-<<<<<<< HEAD
-    # print(ignore_character)  # For debugging purposes
-    return cleaned_prompt
-=======
->>>>>>> bdcb57dae5aa14b7528e67c5ea93725e3f38c6e5
 
 def tokenization(sentence):
     # Default language is French
@@ -148,25 +134,6 @@ print(f"Nettoyage Corpus of Sentence:\n{cleaned_corpus}")
 # Load the GloVe Wiki Gigaword models (you can choose "50", "100", "200", or "300")
 pretrained_model = api.load("glove-wiki-gigaword-100")
 
-<<<<<<< HEAD
-if __name__ == "__main__":
-
-
-    conversations = []
-    for file in os.listdir('.'):
-        if file == "conversations.yml":
-            lines = open(file, 'rt', encoding='utf8').read().split('\n')
-            for line in lines:
-                if line.startswith('- - ') or line.startswith('  - '):
-                    line = line.replace('- - ', '')
-                    line = line.replace('  - ', '')
-                    conversations.append(text_cleaning(delete_stopwords(to_lowercase(line))))
-    
-    print(conversations)
-    conversations = [lemmatization(tokenization(sentence=sent)) for sent in conversations]
-    print(conversations)
-
-=======
 # Load the GloVe Twitter model (e.g., 25-dimensional)
 # pretrained_model = api.load("glove-twitter-25")
 
@@ -185,4 +152,3 @@ if sentence_embedding is not None:
     print(sentence_embedding)
 else:
     print("No valid tokens found for computing sentence embedding.")
->>>>>>> bdcb57dae5aa14b7528e67c5ea93725e3f38c6e5
