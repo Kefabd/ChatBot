@@ -6,3 +6,4 @@ pyyaml
 scikit-learn
 gensim
 torch
+streamlit

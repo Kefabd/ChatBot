@@ -18,14 +18,6 @@ nltk.download("wordnet")
 
 english_stop_words = list(set(stopwords.words("english")))
 
-# Load the YAML file
-with open("conversations.yml", "r", encoding="utf-8") as file:
-    data = yaml.safe_load(file)  # Parse YAML file safely
-
-# Extract conversations from the YAML data
-conversations = data["conversations"]
-print(conversations)
-
 
 def to_lowercase(prompt):
     return prompt.lower()
@@ -50,6 +42,7 @@ def text_cleaning(prompt):
 
     # Remove extra spaces
     cleaned_prompt = re.sub(r"\s+", " ", cleaned_prompt)
+    print("Cleaned text: ", cleaned_prompt)
 
     return cleaned_prompt.strip()
 
@@ -60,7 +53,9 @@ def tokenization(sentence):
     language_detected = detect(sentence)
     if language_detected == "en":
         language = "english"
-    return nltk.word_tokenize(sentence, language=language)
+    tokens = nltk.word_tokenize(sentence, language=language)
+    print(tokens)
+    return tokens
 
 
 def lemmatization(tokens):
@@ -68,15 +63,13 @@ def lemmatization(tokens):
     return [lemmatizer.lemmatize(token) for token in tokens]
 
 
-def nettoyage_corpus(corpus):
+def nettoyage_prompt(prompt):
     """
     Expects corpus to be an iterable (e.g., list) of documents.
     """
-    cleaned_conversations = [
-        lemmatization(tokenization(text_cleaning(delete_stopwords(to_lowercase(doc)))))
-        for doc in corpus
-    ]
-    return cleaned_conversations
+    
+    return lemmatization(tokenization(text_cleaning(delete_stopwords(to_lowercase(prompt)))))
+      
 
 
 """
@@ -115,7 +108,7 @@ def get_sentence_embedding(model, tokenized_sentence):
     word_vectors = [model[token] for token in valid_tokens]
     return np.mean(word_vectors, axis=0)
 
-
+"""
 # Example usage
 sentence = "I'm happy to be here today as an data engineering working student and I will try to do my best to be the first one ! on the next day of this week?"
 
@@ -152,3 +145,5 @@ if sentence_embedding is not None:
     print(sentence_embedding)
 else:
     print("No valid tokens found for computing sentence embedding.")
+"""
+
