@@ -1,5 +1,3 @@
-# NLG.py
-
 import os
 import re
 import string
@@ -14,7 +12,6 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from numpy.linalg import norm
 from sklearn.linear_model import LogisticRegression
-
 
 # -------------------- Setup and Downloads --------------------
 nltk.download("stopwords")
@@ -78,16 +75,21 @@ def get_sentence_embedding(model, sentence):
 
 
 # -------------------- Retrieval-Based Response Generation --------------------
-# Candidate responses for intents
+# Enhanced candidate responses for intents, including a new "eilco" intent.
 candidate_responses = {
     "greeting": [
         "Hello! How can I help you today?",
-        "Hi there! What can I do for you?",
-        "Hey! How's it going?",
+        "Hi there, welcome to our chatbot!",
+        "Hey! What would you like to discuss today?",
+        "Hello! Feel free to ask anything, including details about EiLCO.",
     ],
-    "goodbye": ["Goodbye! Have a great day.", "Bye! Take care.", "See you later!"],
+    "goodbye": [
+        "Goodbye! Have a great day.",
+        "Bye! Take care.",
+        "See you later, and remember, EiLCO is always here to support your journey.",
+    ],
     "get_time": [
-        "The current time is 3:45 PM.",
+        "The current time is 3:45 PM.",  # placeholder text; can be replaced by a live function
         "It's 3:45 in the afternoon right now.",
         "Right now, it's 3:45 PM.",
     ],
@@ -96,24 +98,37 @@ candidate_responses = {
         "Currently, it's sunny with a temperature of 25°C.",
         "The weather is clear and warm at 25°C.",
     ],
-    "thanks": ["You're welcome!", "No problem, happy to help!", "Anytime!"],
-    "apology": ["No worries, it's okay.", "Apology accepted.", "Don't worry about it."],
+    "thanks": [
+        "You're welcome!",
+        "No problem, happy to help!",
+        "Anytime! If you need more info on EiLCO, just ask.",
+    ],
+    "apology": [
+        "No worries, it's okay.",
+        "Apology accepted.",
+        "Don't worry about it. Let me know if you need any clarification.",
+    ],
     "unknown": [
         "I'm not sure I understand. Could you please clarify?",
         "Sorry, I didn't catch that. Can you rephrase?",
         "I don't understand. Can you explain a bit more?",
     ],
+    "eilco": [
+        "EiLCO stands for École d'Ingénieurs du Littoral Côte d'Opale. We offer innovative engineering programs and foster strong industry connections.",
+        "At EiLCO, our mission is to empower students with hands-on skills in engineering and technology tailored for coastal industries.",
+        "EiLCO is a leading school for coastal engineering, where future engineers learn through real-world projects, innovative research, and personalized mentoring.",
+        "If you’re interested in the engineering sector with a focus on coastal innovations, EiLCO has a range of programs and opportunities just for you.",
+    ],
 }
 
 
-# Calculate cosine similarity between vectors
 def cosine_similarity(vec1, vec2):
     if norm(vec1) == 0 or norm(vec2) == 0:
         return 0.0
     return np.dot(vec1, vec2) / (norm(vec1) * norm(vec2))
 
 
-# Prepare a small intent dataset for ML-based classification
+# Enhanced training data for intent classification.
 intent_phrases = {
     "greeting": [
         "Hello",
@@ -128,14 +143,6 @@ intent_phrases = {
         "Hi, how are you?",
         "Hey",
         "Hello there",
-        "Hey, what's going on?",
-        "Yo",
-        "Hiya",
-        "Hello, nice to see you!",
-        "Hey buddy",
-        "Good to see you",
-        "Hi, hope you're well",
-        "Hello, how do you do?",
     ],
     "goodbye": [
         "Goodbye",
@@ -150,14 +157,6 @@ intent_phrases = {
         "Adios",
         "Later",
         "So long",
-        "Good night",
-        "I'm off",
-        "Peace out",
-        "Ciao",
-        "Until next time",
-        "Farewell for now",
-        "See you around",
-        "Later alligator",
     ],
     "get_time": [
         "What time is it?",
@@ -166,20 +165,6 @@ intent_phrases = {
         "I need to know the time",
         "Time please",
         "Do you know what time it is?",
-        "Can you tell me the time?",
-        "What's the time now?",
-        "Please share the time",
-        "Current time?",
-        "Time update",
-        "What's the clock saying?",
-        "Show me the time",
-        "Time check",
-        "What's the time, please?",
-        "May I know the time?",
-        "Could you update me with the time?",
-        "Time now?",
-        "Let me know the time",
-        "Time?",
     ],
     "get_weather": [
         "What's the weather like today?",
@@ -188,20 +173,6 @@ intent_phrases = {
         "Is it going to rain?",
         "Weather update please",
         "What's the temperature outside?",
-        "Do I need an umbrella today?",
-        "Weather report",
-        "Current weather conditions?",
-        "How's the weather outside?",
-        "Forecast for today?",
-        "Is it sunny or rainy?",
-        "Weather status",
-        "What's the climate like today?",
-        "Do I need a jacket today?",
-        "How's the weather looking?",
-        "Any rain expected today?",
-        "Weather check",
-        "Let me know today's weather",
-        "Weather update",
     ],
     "thanks": [
         "Thank you",
@@ -211,19 +182,6 @@ intent_phrases = {
         "Thank you very much",
         "I appreciate it",
         "Thanks a million",
-        "Thank you so much",
-        "Cheers",
-        "Thanks a bunch",
-        "Many thanks",
-        "I'm grateful",
-        "Thank you kindly",
-        "I owe you one",
-        "Appreciate it",
-        "Thanks for everything",
-        "Thanks, that was helpful",
-        "Thank you, really appreciate it",
-        "Thanks a ton",
-        "Sincere thanks",
     ],
     "apology": [
         "I'm sorry",
@@ -232,20 +190,6 @@ intent_phrases = {
         "I apologize",
         "Please forgive me",
         "Sorry about that",
-        "My bad",
-        "I didn't mean that",
-        "I am really sorry",
-        "Apologies",
-        "I regret that",
-        "So sorry",
-        "Excuse me",
-        "Pardon me",
-        "I beg your pardon",
-        "I sincerely apologize",
-        "Forgive me, please",
-        "I apologize for any inconvenience",
-        "I'm truly sorry",
-        "Sorry, my mistake",
     ],
     "unknown": [
         "I don't know",
@@ -253,25 +197,21 @@ intent_phrases = {
         "What do you mean?",
         "I don't understand",
         "Could you say that again?",
-        "Not sure what you mean",
         "I'm confused",
-        "What?",
-        "Huh?",
-        "I have no idea",
-        "Could you clarify?",
-        "I didn't catch that",
-        "Sorry, what did you say?",
-        "I am not sure I follow",
-        "Please explain",
-        "I don't follow",
-        "Could you rephrase that?",
-        "I don't comprehend",
-        "Unclear to me",
-        "Not sure",
+    ],
+    "eilco": [
+        "Tell me about EiLCO",
+        "I want to know about EiLCO",
+        "What is EiLCO?",
+        "EiLCO programs",
+        "Engineering at EiLCO",
+        "Coastal engineering school",
+        "EiLCO details",
+        "Information about EiLCO",
     ],
 }
 
-# Prepare training data for intent classification
+# Combine data for training intent classifier.
 texts = []
 labels = []
 for intent, phrases in intent_phrases.items():
@@ -279,11 +219,9 @@ for intent, phrases in intent_phrases.items():
         texts.append(phrase)
         labels.append(intent)
 
-# Create sentence embeddings for each training phrase
 X = np.array([get_sentence_embedding(pretrained_model, text) for text in texts])
 y = np.array(labels)
 
-# Train the classifier (using Logistic Regression)
 clf = LogisticRegression(max_iter=1000)
 clf.fit(X, y)
 
@@ -340,7 +278,7 @@ def clean_text(text, remove_stopwords=False):
     return tokens
 
 
-# Sample conversational dataset (input-response pairs)
+# Enhanced conversational dataset with many new pairs including EiLCO-related conversations.
 pairs = [
     ("hello", "hi there"),
     ("hi", "hello, how can I help you?"),
@@ -398,13 +336,50 @@ pairs = [
         "sure, i can help with that. can you provide your travel dates?",
     ),
     ("can i talk to a human", "i can connect you with a human agent, please hold on."),
+    # New conversational pairs about EiLCO:
+    (
+        "what is eilco",
+        "EiLCO stands for École d'Ingénieurs du Littoral Côte d'Opale, a school focused on innovative coastal engineering.",
+    ),
+    (
+        "tell me about eilco",
+        "EiLCO offers hands-on engineering programs with a focus on coastal technologies and sustainable development.",
+    ),
+    (
+        "what programs does eilco offer",
+        "EiLCO offers various engineering programs including coastal engineering, environmental technology, and industrial innovation.",
+    ),
+    (
+        "where is eilco located",
+        "EiLCO is located along the beautiful Côte d'Opale, providing a unique setting for learning and research.",
+    ),
+    (
+        "why should i study at eilco",
+        "Studying at EiLCO means you receive practical training in coastal engineering, industry partnerships, and personalized mentoring.",
+    ),
+    (
+        "how is the campus at eilco",
+        "The campus at EiLCO is modern and innovative, designed to foster collaboration and hands-on learning.",
+    ),
+    (
+        "can you give me more details about eilco",
+        "Certainly! EiLCO combines rigorous academic training with practical experience in coastal and marine engineering projects.",
+    ),
+    (
+        "what makes eilco unique",
+        "EiLCO stands out for its unique focus on coastal and maritime challenges, offering specialized courses and hands-on projects.",
+    ),
+    (
+        "i want to know about coastal engineering",
+        "Coastal engineering at EiLCO focuses on sustainable development, innovative design, and environmental responsibility.",
+    ),
 ]
 
-# Preprocess input and target texts
+# Preprocess input and target texts for Seq2Seq training.
 input_texts = [pair[0] for pair in pairs]
 target_texts = [pair[1] for pair in pairs]
 
-# Add special tokens for decoder
+# Add special tokens for decoder output.
 START_TOKEN = "<start>"
 END_TOKEN = "<end>"
 target_tokens = [[START_TOKEN] + clean_text([t])[0] + [END_TOKEN] for t in target_texts]
@@ -412,7 +387,7 @@ target_tokens = [[START_TOKEN] + clean_text([t])[0] + [END_TOKEN] for t in targe
 input_tokens = clean_text(input_texts, remove_stopwords=False)
 
 
-# Build vocabulary
+# Build vocabulary from tokens.
 def build_vocab(tokenized_texts, min_freq=1):
     freq = {}
     for tokens in tokenized_texts:
@@ -420,9 +395,8 @@ def build_vocab(tokenized_texts, min_freq=1):
             freq[token] = freq.get(token, 0) + 1
     vocab = {token for token, count in freq.items() if count >= min_freq}
     vocab = sorted(list(vocab))
-    word2idx = {
-        word: idx + 2 for idx, word in enumerate(vocab)
-    }  # Reserve index 0 for <pad> and 1 for <unk>
+    # Reserve index 0 for <pad> and index 1 for <unk>
+    word2idx = {word: idx + 2 for idx, word in enumerate(vocab)}
     word2idx["<pad>"] = 0
     word2idx["<unk>"] = 1
     idx2word = {idx: word for word, idx in word2idx.items()}
@@ -434,7 +408,7 @@ word2idx, idx2word = build_vocab(all_tokens)
 vocab_size = len(word2idx)
 print("Vocabulary size:", vocab_size)
 
-# Create embedding matrix using GloVe
+# Create embedding matrix using GloVe.
 embedding_matrix = np.zeros((vocab_size, embed_dim))
 for word, idx in word2idx.items():
     if word in pretrained_model:
@@ -444,7 +418,7 @@ for word, idx in word2idx.items():
 embedding_matrix = torch.tensor(embedding_matrix, dtype=torch.float)
 
 
-# Convert tokens to indices and pad sequences
+# Convert tokens to indices and pad sequences.
 def tokens_to_indices(tokens, word2idx):
     return [word2idx.get(token, word2idx["<unk>"]) for token in tokens]
 
@@ -499,7 +473,9 @@ class Decoder(nn.Module):
 hidden_size = 256
 num_epochs = 300
 learning_rate = 0.001
-batch_size = encoder_inputs.size(0)  # using the entire dataset in one batch
+batch_size = encoder_inputs.size(
+    0
+)  # using full dataset as a single batch for simplicity
 
 encoder = Encoder(vocab_size, embed_dim, hidden_size, embedding_matrix)
 decoder = Decoder(vocab_size, embed_dim, hidden_size, embedding_matrix)
@@ -520,12 +496,14 @@ def train_seq2seq():
     for epoch in range(1, num_epochs + 1):
         optimizer.zero_grad()
         hidden, cell = encoder(encoder_inputs)
-        decoder_input = decoder_inputs[:, 0]  # initial input tokens (start tokens)
+        decoder_input = decoder_inputs[
+            :, 0
+        ]  # starting with start tokens for each sample
         loss = 0
         for t in range(1, decoder_max_len):
             output, hidden, cell = decoder(decoder_input, hidden, cell)
             loss += criterion(output, decoder_inputs[:, t])
-            decoder_input = decoder_inputs[:, t]  # teacher forcing
+            decoder_input = decoder_inputs[:, t]  # Teacher forcing
 
         loss.backward()
         optimizer.step()
@@ -534,7 +512,6 @@ def train_seq2seq():
             print(
                 f"Epoch [{epoch}/{num_epochs}], Loss: {loss.item() / (decoder_max_len - 1):.4f}"
             )
-    # Save model weights after training
     torch.save(encoder.state_dict(), encoder_weights_file)
     torch.save(decoder.state_dict(), decoder_weights_file)
     print("Seq2Seq model trained and weights saved.")
@@ -625,7 +602,9 @@ if __name__ == "__main__":
         "what's the weather like?",
         "i am having a technical issue",
         "can i talk to a human?",
-        "goodbye",
+        "what is eilco",
+        "tell me about eilco",
+        "why should i study at eilco",
     ]
 
     print("\n--- Retrieval-Based Responses ---")

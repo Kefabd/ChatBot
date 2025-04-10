@@ -1,5 +1,3 @@
-import sys
-import asyncio
 import streamlit as st
 from NLU.text_preprocessing import nettoyage_prompt, get_sentence_embedding
 from NLG.NLG import (
@@ -7,10 +5,6 @@ from NLG.NLG import (
     seq2seq_response,
 )  # import the new functions
 import gensim.downloader as api
-
-
-if sys.platform.startswith("win"):
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
 @st.cache_resource(show_spinner="Loading embedding model...")
